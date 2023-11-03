@@ -3,32 +3,32 @@ package com.frtena.crud.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "employees")
+@Table(name = "empleados")
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "first_name")
+    @Column(name = "nombre")
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "apellido")
     private String lastName;
 
     @Column(name = "email")
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "enterprise_id")
-    private Company empresa;
+    @JoinColumn(name = "empresa_id")
+    private Company company;
 
-    public Company getEmpresa() {
-        return empresa;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setEmpresa(Company empresa) {
-        this.empresa = empresa;
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public long getId() {

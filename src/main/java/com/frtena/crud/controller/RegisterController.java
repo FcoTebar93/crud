@@ -26,6 +26,6 @@ public class RegisterController {
         empresa.setEmail(email);
         empresa.setPassword(password);
         empresaRepository.save(empresa);
-        return "redirect:/login";
+        return "redirect:/index";
     }
 }

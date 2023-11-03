@@ -1,7 +1,10 @@
 package com.frtena.crud.controller;
 
+import com.frtena.crud.entity.Company;
 import com.frtena.crud.entity.Employee;
+import com.frtena.crud.repository.CompanyRepository;
 import com.frtena.crud.repository.EmployeeRepository;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +21,28 @@ public class EmployeeController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    @GetMapping("/")
-    public String showEmployeeList(Model model) {
-        model.addAttribute("employees", employeeRepository.findAll());
-        return "index";
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    @GetMapping("/employee-list")
+    public String showEmployeeList(Model model, HttpSession session) {
+        // Obtener el email de la sesión actual
+        String email = (String) session.getAttribute("email");
+        // Obtener el objeto "Company" correspondiente al email de la sesión actual
+        Company company = companyRepository.findByEmail(email);
+        // Obtener la lista de empleados correspondientes a la empresa con el id obtenido
+        List<Employee> employees = (List<Employee>) employeeRepository.findByCompany(company);
+        // Agregar la lista de empleados obtenida al modelo
+        model.addAttribute("employees", employees);
+        return "employee-list";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/add-employee")
     public String showAddForm(Employee employee) {
         return "add-employee";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/add-employee")
     public String addEmployee(@Valid Employee employee, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "add-employee";
@@ -37,17 +50,17 @@ public class EmployeeController {
 
         employeeRepository.save(employee);
         model.addAttribute("employees", employeeRepository.findAll());
-        return "index";
+        return "employee-list";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/edit-employee/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid employee Id:" + id));
         model.addAttribute("employee", employee);
         return "update-employee";
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping("/update-employee/{id}")
     public String updateEmployee(@PathVariable("id") long id, @Valid Employee employee, BindingResult result, Model model) {
         if (result.hasErrors()) {
             employee.setId(id);
@@ -56,7 +69,7 @@ public class EmployeeController {
 
         employeeRepository.save(employee);
         model.addAttribute("employees", employeeRepository.findAll());
-        return "index";
+        return "employee-list";
     }
 
     @GetMapping("/delete/{id}")
@@ -64,6 +77,6 @@ public class EmployeeController {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid employee Id:" + id));
         employeeRepository.delete(employee);
         model.addAttribute("employees", employeeRepository.findAll());
-        return "index";
+        return "employee-list";
     }
 }

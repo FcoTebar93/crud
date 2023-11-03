@@ -17,18 +17,18 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login";
+        return "index";
     }
 
     @PostMapping("/login")
     public String processLoginForm(@RequestParam String email, @RequestParam String password, HttpSession session) {
         Company company = companyRepository.findByEmailAndPassword(email, password);
         if (company != null) {
-            session.setAttribute("empresa", company);
-            return "redirect:/empresa";
+            session.setAttribute("email", email);
+            return "redirect:/employee-list";
         } else {
             session.setAttribute("error", "Correo electrónico o contraseña incorrectos");
-            return "redirect:/login";
+            return "redirect:/index";
         }
     }
 }
