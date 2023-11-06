@@ -2,38 +2,39 @@ package com.frtena.crud.controller;
 
 import com.frtena.crud.entity.Company;
 import com.frtena.crud.entity.Employee;
-import com.frtena.crud.repository.CompanyRepository;
-import com.frtena.crud.repository.EmployeeRepository;
+import com.frtena.crud.service.CompanyService;
+import com.frtena.crud.service.EmployeeService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class EmployeeController {
 
     @Autowired
-    private EmployeeRepository employeeRepository;
+    private EmployeeService employeeService;
 
     @Autowired
-    private CompanyRepository companyRepository;
+    private CompanyService companyService;
 
     @GetMapping("/employee-list")
     public String showEmployeeList(Model model, HttpSession session) {
-        // Obtener el email de la sesión actual
         String email = (String) session.getAttribute("email");
-        // Obtener el objeto "Company" correspondiente al email de la sesión actual
-        Company company = companyRepository.findByEmail(email);
-        // Obtener la lista de empleados correspondientes a la empresa con el id obtenido
-        List<Employee> employees = (List<Employee>) employeeRepository.findByCompany(company);
-        // Agregar la lista de empleados obtenida al modelo
-        model.addAttribute("employees", employees);
+        Company company = companyService.findByEmail(email);
+
+        if (company != null) {
+            List<Employee> employees = company.getEmployees();
+            model.addAttribute("employees", employees);
+        } else {
+            model.addAttribute("employees", new ArrayList<Employee>());
+        }
         return "employee-list";
     }
 
@@ -43,40 +44,50 @@ public class EmployeeController {
     }
 
     @PostMapping("/add-employee")
-    public String addEmployee(@Valid Employee employee, BindingResult result, Model model) {
+    public String addEmployee(@Valid Employee employee, BindingResult result, Model model, HttpSession session) {
         if (result.hasErrors()) {
             return "add-employee";
         }
 
-        employeeRepository.save(employee);
-        model.addAttribute("employees", employeeRepository.findAll());
-        return "employee-list";
+        Employee existingEmployee = employeeService.findByEmailAndCompany(employee.getEmail(), companyService.findByEmail((String) session.getAttribute("email")));
+
+        if (existingEmployee != null) {
+            model.addAttribute("error", "Ya existe un empleado con el mismo email");
+            return "add-employee";
+        } else {
+            Company company = companyService.findByEmail((String) session.getAttribute("email"));
+            employee.setCompany(company);
+            employeeService.saveEmployee(employee);
+            model.addAttribute("employees", employeeService.findByCompany(company));
+            return "employee-list";
+        }
     }
 
-    @GetMapping("/edit-employee/{id}")
+    @GetMapping("/update-employee/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid employee Id:" + id));
+        Employee employee = employeeService.findEmployeeById(id);
         model.addAttribute("employee", employee);
         return "update-employee";
     }
 
     @PostMapping("/update-employee/{id}")
-    public String updateEmployee(@PathVariable("id") long id, @Valid Employee employee, BindingResult result, Model model) {
+    public String updateEmployee(@PathVariable("id") long id, @Valid Employee employee, BindingResult result, Model model, HttpSession session) {
         if (result.hasErrors()) {
             employee.setId(id);
             return "update-employee";
         }
 
-        employeeRepository.save(employee);
-        model.addAttribute("employees", employeeRepository.findAll());
+        employeeService.saveEmployee(employee);
+        model.addAttribute("employees", employeeService.findByCompany(companyService.findByEmail((String) session.getAttribute("email"))));
         return "employee-list";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteEmployee(@PathVariable("id") long id, Model model) {
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid employee Id:" + id));
-        employeeRepository.delete(employee);
-        model.addAttribute("employees", employeeRepository.findAll());
+    @GetMapping("/delete-employee/{id}")
+    public String deleteEmployee(@PathVariable("id") long id, Model model, HttpSession session) {
+        Employee employee = employeeService.findEmployeeById(id);
+        employeeService.deleteEmployee(employee);
+        model.addAttribute("employees", employeeService.findByCompany(companyService.findByEmail((String) session.getAttribute("email"))));
         return "employee-list";
     }
+
 }

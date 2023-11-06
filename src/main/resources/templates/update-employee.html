@@ -8,7 +8,7 @@
 <body>
 <div class="container">
     <h1>Edit Employee</h1>
-    <form th:action="@{/update/{id}(id=${employee.id})}" th:object="${employee}" method="post">
+    <form th:action="@{/update-employee/{id}(id=${employee.id})}" th:object="${employee}" method="post">
         <div class="form-group">
             <label for="firstName">First Name:</label>
             <input type="text" th:field="*{firstName}" class="form-control" id="firstName" placeholder="Enter first name">

@@ -15,12 +15,12 @@ public class LoginController {
     @Autowired
     private CompanyRepository companyRepository;
 
-    @GetMapping("/login")
+    @GetMapping("/index")
     public String showLoginForm() {
         return "index";
     }
 
-    @PostMapping("/login")
+    @PostMapping("/index")
     public String processLoginForm(@RequestParam String email, @RequestParam String password, HttpSession session) {
         Company company = companyRepository.findByEmailAndPassword(email, password);
         if (company != null) {

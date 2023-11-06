@@ -3,6 +3,8 @@ package com.frtena.crud.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 @Entity
 @Table(name = "empresas")
 public class Company {
@@ -19,9 +21,20 @@ public class Company {
     @NotNull
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "contraseña")
     @NotNull
     private String password;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Employee> employees;
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
+    }
 
     public Long getId() {
         return id;

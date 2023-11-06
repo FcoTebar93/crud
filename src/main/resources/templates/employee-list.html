@@ -25,13 +25,13 @@
             <td th:text="${employee.lastName}"></td>
             <td th:text="${employee.email}"></td>
             <td>
-                <a th:href="@{/edit/{id}(id=${employee.id})}" class="btn btn-primary">Edit</a>
-                <a th:href="@{/delete/{id}(id=${employee.id})}" class="btn btn-danger">Delete</a>
+                <a th:href="@{/update-employee/{id}(id=${employee.id})}" class="btn btn-primary">Edit</a>
+                <a th:href="@{/delete-employee/{id}(id=${employee.id})}" class="btn btn-danger">Delete</a>
             </td>
         </tr>
         </tbody>
     </table>
-    <a th:href="@{/add}" class="btn btn-success">Add Employee</a>
+    <a th:href="@{/add-employee}" class="btn btn-success">Add Employee</a>
 </div>
 </body>
 </html>
