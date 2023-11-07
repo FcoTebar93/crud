@@ -51,4 +51,8 @@ public class CompanyService {
         public Company findByEmail(String email) {
             return companyRepository.findByEmail(email);
         }
+
+        public Company findByEmailAndPassword(String email, String password) {
+            return companyRepository.findByEmailAndPassword(email, password);
+        }
 }

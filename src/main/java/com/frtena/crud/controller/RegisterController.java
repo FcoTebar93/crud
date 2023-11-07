@@ -1,7 +1,7 @@
 package com.frtena.crud.controller;
 
 import com.frtena.crud.entity.Company;
-import com.frtena.crud.repository.CompanyRepository;
+import com.frtena.crud.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class RegisterController {
 
     @Autowired
-    private CompanyRepository empresaRepository;
+    private CompanyService companyService;
 
     @GetMapping("/register")
     public String showRegistroEmpresaForm() {
@@ -25,7 +25,7 @@ public class RegisterController {
         empresa.setNombre(nombre);
         empresa.setEmail(email);
         empresa.setPassword(password);
-        empresaRepository.save(empresa);
+        companyService.saveCompany(empresa);
         return "redirect:/index";
     }
 }

@@ -7,11 +7,10 @@
 <body>
 <div class="container">
   <h2>Iniciar sesión</h2>
-  <!-- Mostrar mensaje de error si está presente -->
-  <div th:if="${param.error != null}" class="alert alert-danger">
-    <p th:text="${param.error}"></p>
-  </div>
-  <form>
+  <form method="post" action="/index">
+    <div th:if="${session.error != null}" class="alert alert-danger">
+      <p th:text="${session.error}"></p>
+    </div>
     <div class="form-group">
       <label for="email">Correo electrónico:</label>
       <input type="email" class="form-control" id="email" name="email" required>
@@ -20,7 +19,7 @@
       <label for="password">Contraseña:</label>
       <input type="password" class="form-control" id="password" name="password" required>
     </div>
-    <button type="submit" class="btn btn-primary" formaction="/employee-list">Iniciar sesión</button>
+    <button type="submit" class="btn btn-primary">Iniciar sesión</button>
     <button type="button" class="btn btn-primary" id="register-button">Registrarse</button>
   </form>
 </div>

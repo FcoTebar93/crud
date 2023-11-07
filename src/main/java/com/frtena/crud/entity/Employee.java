@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "empleados")
+@Access(AccessType.FIELD)
 public class Employee {
 
     @Id
@@ -19,7 +20,7 @@ public class Employee {
     @Column(name = "email")
     private String email;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id")
     private Company company;
 
